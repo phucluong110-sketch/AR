@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Smart-Print WebAR</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+</head>
+<body style="margin: 0px; overflow: hidden;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        <a-marker preset="hiro">
+            <a-plane position="0 0.5 0" rotation="-60 0 0" width="2.5" height="1.5" color="#FFB020" opacity="0.95">
+                <a-text value="H THONG SO HOA PALLET AR" align="center" position="0 0.5 0.05" width="4" color="#000" font="mozillavr"></a-text>
+                <a-text id="txt-pallet" value="Pallet: Dang doc..." align="left" position="-1 0.1 0.05" width="3.5" color="#fff"></a-text>
+                <a-text id="txt-don" value="Don hang: Dang doc..." align="left" position="-1 -0.2 0.05" width="3.5" color="#fff"></a-text>
+                <a-text id="txt-status" value="Trang thai: Dang doc..." align="left" position="-1 -0.5 0.05" width="3.5" color="#000"></a-text>
+            </a-plane>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        // 🔴 ĐỔI THÀNH URL WEB APP Ở BƯỚC 1 CỦA BẠN:
+        const URL_API = "https://script.google.com/macros/s/AKfycbzGjkFDvad-MVP-UxWmb64sko-qXIhZTSM3iu32CX9yefHumLKkt2JMeZxrk3SN4YbmBQ/exec";
+        
+        async function docDuLieuAR() {
+            try {
+                let response = await fetch(URL_API);
+                let result = await response.json();
+                if(result.status === "success") {
+                    // Giả sử nhãn này dán cố định ở Pallet 2 (PLL-002)
+                    let items = result.data;
+                    let myPallet = items.find(p => p.ma_pallet === "PLL-002");
+                    
+                    if(myPallet) {
+                        document.querySelector("#txt-pallet").setAttribute("value", "Pallet ID: " + myPallet.ma_pallet);
+                        document.querySelector("#txt-don").setAttribute("value", "Ma Don: " + myPallet.ma_don);
+                        document.querySelector("#txt-status").setAttribute("value", "Trang Thai: " + myPallet.trang_thai);
+                    }
+                }
+            } catch (e) { console.log(e); }
+        }
+        setInterval(docDuLieuAR, 3000); // Tự động cập nhật dữ liệu mới sau mỗi 3 giây
+        docDuLieuAR();
+    </script>
+</body>
+</html>
