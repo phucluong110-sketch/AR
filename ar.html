@@ -3,61 +3,49 @@
 <head>
     <meta charset="utf-8">
     <title>Smart-Print WebAR</title>
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 </head>
 <body style="margin: 0px; overflow: hidden;">
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        
         <a-marker preset="hiro">
             <a-plane position="0 0.5 0" rotation="-60 0 0" width="2.8" height="1.8" color="#FFB020" opacity="0.95">
                 <a-text value="HETHONG SO HOA PALLET AR" align="center" position="0 0.6 0.05" width="4.5" color="#000" font="mozillavr"></a-text>
-                
-                <a-text id="txt-pallet" value="Pallet ID: DANG DOC..." align="left" position="-1.2 0.2 0.05" width="4" color="#fff"></a-text>
-                <a-text id="txt-don" value="Ma Don: DANG DOC..." align="left" position="-1.2 -0.1 0.05" width="4" color="#fff"></a-text>
-                <a-text id="txt-status" value="Trang Thai: CHO DONG BO..." align="left" position="-1.2 -0.4 0.05" width="4" color="#000"></a-text>
+                <a-text id="txt-pallet" value="Pallet ID: Dang doc..." align="left" position="-1.2 0.2 0.05" width="4" color="#fff"></a-text>
+                <a-text id="txt-don" value="Ma Don: Dang doc..." align="left" position="-1.2 -0.1 0.05" width="4" color="#fff"></a-text>
+                <a-text id="txt-status" value="Trang Thai: Dang doc..." align="left" position="-1.2 -0.4 0.05" width="4" color="#000"></a-text>
             </a-plane>
         </a-marker>
-        
         <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-        // 🔴 ĐIỀN CHÍNH XÁC URL WEB APP APPS SCRIPT CỦA BẠN VÀO ĐÂY
+        // 🔴 THAY BẰNG URL WEB APP MỚI BẠN VỪA GENERATE Ở BƯỚC 1:
         const URL_API = "https://script.google.com/macros/s/AKfycbzGjkFDvad-MVP-UxWmb64sko-qXIhZTSM3iu32CX9yefHumLKkt2JMeZxrk3SN4YbmBQ/exec";
 
         async function docDuLieuAR() {
-            if (URL_API.includes("DÁN_URL_WEB_APP")) {
-                console.log("Chưa cấu hình URL API thật.");
-                return;
-            }
+            if (URL_API.includes("DÁN_URL_WEB_APP")) return;
             try {
                 let response = await fetch(URL_API);
                 let result = await response.json();
                 
                 if(result.status === "success" && result.data) {
-                    // Tìm dữ liệu của Pallet số 1 (PLL-001)
+                    // Lấy dữ liệu của Pallet PLL-001 để hiển thị kiểm tra
                     let myPallet = result.data.find(p => p.ma_pallet === "PLL-001");
                     
                     if(myPallet) {
-                        // Sửa lại tên biến cho khớp chính xác với tiêu đề cột Google Sheets của bạn
-                        let maDonHang = myPallet.ma_don_hang || "Chưa có đơn";
-                        let trangThai = myPallet["Trang thai"] || "Trống"; 
-
                         document.querySelector("#txt-pallet").setAttribute("value", "Pallet ID: " + myPallet.ma_pallet);
-                        document.querySelector("#txt-don").setAttribute("value", "Ma Don: " + maDonHang);
-                        document.querySelector("#txt-status").setAttribute("value", "Trang Thai: " + trangThai);
-                        console.log("Đồng bộ dữ liệu Sheet thành công!");
+                        document.querySelector("#txt-don").setAttribute("value", "Ma Don: " + myPallet.ma_don_hang);
+                        document.querySelector("#txt-status").setAttribute("value", "Trang Thai: " + myPallet.trang_thai);
+                        console.log("Đồng bộ thành công!");
                     }
                 }
             } catch (e) { 
-                console.log("Lỗi đồng bộ API nhưng AR vẫn hoạt động độc lập:", e); 
+                console.log("Lỗi đồng bộ AR:", e); 
             }
         }
-
-        // Chạy kiểm tra dữ liệu
         docDuLieuAR();
-        setInterval(docDuLieuAR, 5000); // 5 giây tải lại dữ liệu từ Sheet một lần
+        setInterval(docDuLieuAR, 3000); // 3 giây cập nhật lại dữ liệu một lần
     </script>
 </body>
 </html>
