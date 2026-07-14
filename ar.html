@@ -40,9 +40,13 @@
                     let myPallet = result.data.find(p => p.ma_pallet === "PLL-001");
                     
                     if(myPallet) {
+                        // Sửa lại tên biến cho khớp chính xác với tiêu đề cột Google Sheets của bạn
+                        let maDonHang = myPallet.ma_don_hang || "Chưa có đơn";
+                        let trangThai = myPallet["Trang thai"] || "Trống"; 
+
                         document.querySelector("#txt-pallet").setAttribute("value", "Pallet ID: " + myPallet.ma_pallet);
-                        document.querySelector("#txt-don").setAttribute("value", "Ma Don: " + myPallet.ma_don);
-                        document.querySelector("#txt-status").setAttribute("value", "Trang Thai: " + myPallet.trang_thai);
+                        document.querySelector("#txt-don").setAttribute("value", "Ma Don: " + maDonHang);
+                        document.querySelector("#txt-status").setAttribute("value", "Trang Thai: " + trangThai);
                         console.log("Đồng bộ dữ liệu Sheet thành công!");
                     }
                 }
