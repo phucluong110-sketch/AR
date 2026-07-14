@@ -20,11 +20,10 @@
     </a-scene>
 
     <script>
-        // 🔴 THAY BẰNG URL WEB APP MỚI BẠN VỪA GENERATE Ở BƯỚC 1:
+        // Đường link API Apps Script của bạn
         const URL_API = "https://script.google.com/macros/s/AKfycbzGjkFDvad-MVP-UxWmb64sko-qXIhZTSM3iu32CX9yefHumLKkt2JMeZxrk3SN4YbmBQ/exec";
 
         async function docDuLieuAR() {
-            if (URL_API.includes("DÁN_URL_WEB_APP")) return;
             try {
                 let response = await fetch(URL_API);
                 let result = await response.json();
@@ -34,14 +33,18 @@
                     let myPallet = result.data.find(p => p.ma_pallet === "PLL-001");
                     
                     if(myPallet) {
+                        // Sửa lỗi chính xác tên thuộc tính và thêm cơ chế dự phòng chống crash code
+                        let maDonHang = myPallet.ma_don_hang || "Cho cap nhat";
+                        let trangThai = myPallet["Trang thai"] || myPallet.trang_thai || "Cho chay in";
+
                         document.querySelector("#txt-pallet").setAttribute("value", "Pallet ID: " + myPallet.ma_pallet);
-                        document.querySelector("#txt-don").setAttribute("value", "Ma Don: " + myPallet.ma_don_hang);
-                        document.querySelector("#txt-status").setAttribute("value", "Trang Thai: " + myPallet.trang_thai);
+                        document.querySelector("#txt-don").setAttribute("value", "Ma Don: " + maDonHang);
+                        document.querySelector("#txt-status").setAttribute("value", "Trang Thai: " + trangThai);
                         console.log("Đồng bộ thành công!");
                     }
                 }
             } catch (e) { 
-                console.log("Lỗi đồng bộ AR:", e); 
+                console.log("Lỗi đồng bộ AR nhưng hệ thống vẫn chạy:", e); 
             }
         }
         docDuLieuAR();
