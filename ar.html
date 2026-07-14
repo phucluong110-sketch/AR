@@ -8,40 +8,52 @@
 </head>
 <body style="margin: 0px; overflow: hidden;">
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        
         <a-marker preset="hiro">
-            <a-plane position="0 0.5 0" rotation="-60 0 0" width="2.5" height="1.5" color="#FFB020" opacity="0.95">
-                <a-text value="H THONG SO HOA PALLET AR" align="center" position="0 0.5 0.05" width="4" color="#000" font="mozillavr"></a-text>
-                <a-text id="txt-pallet" value="Pallet: Dang doc..." align="left" position="-1 0.1 0.05" width="3.5" color="#fff"></a-text>
-                <a-text id="txt-don" value="Don hang: Dang doc..." align="left" position="-1 -0.2 0.05" width="3.5" color="#fff"></a-text>
-                <a-text id="txt-status" value="Trang thai: Dang doc..." align="left" position="-1 -0.5 0.05" width="3.5" color="#000"></a-text>
+            <a-plane position="0 0.5 0" rotation="-60 0 0" width="2.8" height="1.8" color="#FFB020" opacity="0.95">
+                <a-text value="HETHONG SO HOA PALLET AR" align="center" position="0 0.6 0.05" width="4.5" color="#000" font="mozillavr"></a-text>
+                
+                <a-text id="txt-pallet" value="Pallet ID: DANG DOC..." align="left" position="-1.2 0.2 0.05" width="4" color="#fff"></a-text>
+                <a-text id="txt-don" value="Ma Don: DANG DOC..." align="left" position="-1.2 -0.1 0.05" width="4" color="#fff"></a-text>
+                <a-text id="txt-status" value="Trang Thai: CHO DONG BO..." align="left" position="-1.2 -0.4 0.05" width="4" color="#000"></a-text>
             </a-plane>
         </a-marker>
+        
         <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-        // 🔴 ĐỔI THÀNH URL WEB APP Ở BƯỚC 1 CỦA BẠN:
+        // 🔴 ĐIỀN CHÍNH XÁC URL WEB APP APPS SCRIPT CỦA BẠN VÀO ĐÂY
         const URL_API = "https://script.google.com/macros/s/AKfycbzGjkFDvad-MVP-UxWmb64sko-qXIhZTSM3iu32CX9yefHumLKkt2JMeZxrk3SN4YbmBQ/exec";
-        
+
         async function docDuLieuAR() {
+            if (URL_API.includes("DÁN_URL_WEB_APP")) {
+                console.log("Chưa cấu hình URL API thật.");
+                return;
+            }
             try {
                 let response = await fetch(URL_API);
                 let result = await response.json();
-                if(result.status === "success") {
-                    // Giả sử nhãn này dán cố định ở Pallet 2 (PLL-002)
-                    let items = result.data;
-                    let myPallet = items.find(p => p.ma_pallet === "PLL-002");
+                
+                if(result.status === "success" && result.data) {
+                    // Tìm dữ liệu của Pallet số 1 (PLL-001)
+                    let myPallet = result.data.find(p => p.ma_pallet === "PLL-001");
                     
                     if(myPallet) {
                         document.querySelector("#txt-pallet").setAttribute("value", "Pallet ID: " + myPallet.ma_pallet);
                         document.querySelector("#txt-don").setAttribute("value", "Ma Don: " + myPallet.ma_don);
                         document.querySelector("#txt-status").setAttribute("value", "Trang Thai: " + myPallet.trang_thai);
+                        console.log("Đồng bộ dữ liệu Sheet thành công!");
                     }
                 }
-            } catch (e) { console.log(e); }
+            } catch (e) { 
+                console.log("Lỗi đồng bộ API nhưng AR vẫn hoạt động độc lập:", e); 
+            }
         }
-        setInterval(docDuLieuAR, 3000); // Tự động cập nhật dữ liệu mới sau mỗi 3 giây
+
+        // Chạy kiểm tra dữ liệu
         docDuLieuAR();
+        setInterval(docDuLieuAR, 5000); // 5 giây tải lại dữ liệu từ Sheet một lần
     </script>
 </body>
 </html>
