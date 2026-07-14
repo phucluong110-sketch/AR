@@ -8,58 +8,37 @@
 </head>
 <body style="margin: 0px; overflow: hidden;">
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        
         <a-marker preset="hiro">
             <a-plane position="0 0.5 0" rotation="-60 0 0" width="2.8" height="1.8" color="#FFB020" opacity="0.95">
-                <a-text value="HETHONG SO HOA PALLET AR" align="center" position="0 0.6 0.05" width="4.5" color="#000" font="mozillavr"></a-text>
-                
+                <a-text value="SO HOA HIEN TRUONG AR" align="center" position="0 0.6 0.05" width="4.5" color="#000" font="mozillavr"></a-text>
                 <a-text id="txt-pallet" value="Pallet ID: Dang doc..." align="left" position="-1.2 0.2 0.05" width="4" color="#fff"></a-text>
                 <a-text id="txt-don" value="Ma Don: Dang doc..." align="left" position="-1.2 -0.1 0.05" width="4" color="#fff"></a-text>
                 <a-text id="txt-status" value="Trang Thai: Dang doc..." align="left" position="-1.2 -0.4 0.05" width="4" color="#000"></a-text>
             </a-plane>
         </a-marker>
-        
         <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-        // Link API Apps Script chính chủ của bạn
         const URL_API = "https://script.google.com/macros/s/AKfycbzGjkFDvad-MVP-UxWmb64sko-qXIhZTSM3iu32CX9yefHumLKkt2JMeZxrk3SN4YbmBQ/exec";
 
         async function docDuLieuAR() {
             try {
-                console.log("Đang yêu cầu lấy dữ liệu từ API...");
                 let response = await fetch(URL_API);
                 let result = await response.json();
                 
-                if(result.status === "success" && result.data) {
-                    // Lấy dữ liệu của Pallet PLL-001 để hiển thị kiểm tra
+                if (result.status === "success" && result.data) {
                     let myPallet = result.data.find(p => p.ma_pallet === "PLL-001");
-                    
-                    if(myPallet) {
-                        // Trích xuất an toàn từ object do doGet trả về
-                        let maPalletVal = myPallet.ma_pallet || "PLL-001";
-                        let maDonVal = myPallet.ma_don_hang || "Trong";
-                        let trangThaiVal = myPallet.trang_thai || "Trong";
-
-                        // Cập nhật lên mô hình 3D
-                        document.querySelector("#txt-pallet").setAttribute("value", "Pallet ID: " + maPalletVal);
-                        document.querySelector("#txt-don").setAttribute("value", "Ma Don: " + maDonVal);
-                        document.querySelector("#txt-status").setAttribute("value", "Trang Thai: " + trangThaiVal);
-                        
-                        console.log("Đồng bộ thành công! Dữ liệu nhận được:", myPallet);
-                    } else {
-                        console.log("Không tìm thấy dữ liệu cho mã PLL-001 trong danh sách.");
+                    if (myPallet) {
+                        document.querySelector("#txt-pallet").setAttribute("value", "Pallet ID: " + myPallet.ma_pallet);
+                        document.querySelector("#txt-don").setAttribute("value", "Ma Don: " + (myPallet.ma_don_hang || "Trong"));
+                        document.querySelector("#txt-status").setAttribute("value", "Trang Thai: " + (myPallet.trang_thai || "Trong"));
                     }
-                } else {
-                    console.log("Định dạng dữ liệu trả về từ API không thành công.");
                 }
-            } catch (e) { 
-                console.log("Lỗi đồng bộ AR:", e); 
+            } catch (e) {
+                console.log("Lỗi đồng bộ:", e);
             }
         }
-
-        // Chạy ngay lần đầu tiên và lặp lại sau mỗi 3 giây
         docDuLieuAR();
         setInterval(docDuLieuAR, 3000);
     </script>
